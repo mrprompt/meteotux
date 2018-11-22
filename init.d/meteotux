@@ -1,0 +1,39 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          mrprompt
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+#
+BASE_DIR="/home/pi/Captures"
+INTERVAL=60
+EXPOSURE=6000
+TIME="21:30-8:00"
+DATE_END=`date -d "1 day" '+%Y%m%d'`
+DATE_START=`date +%Y%m%d`
+CAPTURE_DIR="$DATE_START-$DATE_END"
+
+case "$1" in
+	'start')
+	echo "Starting meteotux"
+	cd $BASE_DIR
+	mkdir -p $CAPTURE_DIR; cd $_
+	nohup meteotux_pi -d $INTERVAL -e $EXPOSURE -t $TIME > /dev/null 2>&1 &
+	;;
+	
+	'stop')
+	echo "Stoping meteotux"
+	killall -9 meteotux_pi
+	;;
+
+	*)
+    	echo "Usage: /etc/init.d/meteotux {start|stop}"
+        exit 1
+	;;
+esac
+
+exit 0
